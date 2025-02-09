@@ -139,8 +139,6 @@
             event.preventDefault();
             
             // Example username and password
-            const adminId = "admin";
-            const adminPass = "password123";
             const userId = "user1";
             const userPass ="10814";
 
@@ -148,10 +146,7 @@
             let password = document.getElementById('password').value;
             let errorMessage = document.getElementById('errorMessage');
 
-            if (username === adminId && password === adminPass) {
-                window.location.href = 'admin.html';
-                // Redirect or perform other actions here
-            } else if(username === userId && password === userPass) {
+            if(username === userId && password === userPass) {
                 localStorage.setItem("isLoggedIn", "true");
                 window.location.href = 'user.html';
             }else {
