@@ -29,6 +29,10 @@ This is a simple web-based banking application that allows users to log in, mana
    cd banking-app
    ```
 3. Open `index.html` in a browser to use the app.
+## Languages Used
+1. Html `index.html`/`history.html`/`user.html`
+2. CSS `Internal CSS`
+3. Javascript `Internal JS`
 
 ## Usage
 1. **Login** using the following credentials:
