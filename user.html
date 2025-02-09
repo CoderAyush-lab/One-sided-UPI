@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Banking App</title>
+    <style>
+        /* Navbar Styles */
+        .navbar {
+            background: #333;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+        }
+        .navbar .logo {
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .navbar ul {
+            list-style: none;
+            display: flex;
+            gap: 15px;
+        }
+        .navbar ul li {
+            display: inline;
+        }
+        .navbar ul li a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 12px;
+            transition: 0.3s;
+        }
+        .navbar ul li a:hover {
+            background: #555;
+            border-radius: 5px;
+        }
+        /* Balance Section */
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 80vh;
+        }
+        .balance-box {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .balance-box h2 {
+            margin-bottom: 10px;
+        }
+        .balance {
+            font-size: 24px;
+            font-weight: bold;
+            color: #28a745;
+        }
+        .input-group {
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        input {
+            width: 200px;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn.add {
+            background: #007bff;  /* blue background */
+            color: white;
+            border: none;
+            padding: 10px 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+        }
+        .btn.add:hover{
+            background: #007bffd3;  /* Darker blue on hover */
+            transform: scale(1.05);  /* Slight zoom effect */
+        }
+        .btn.add:active {
+            transform: scale(0.95);  /* Press effect */
+        }
+        .btn.deduct:hover{
+            background: #c82333;  /* Darker red on hover */
+            transform: scale(1.05);  /* Slight zoom effect */
+        }
+        .btn.deduct {
+            background: #dc3545;  /* Red background */
+            color: white;
+            border: none;
+            padding: 10px 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+        }
+        .logout-btn {
+        background: #dc3545;  /* Red background */
+        color: white;
+        border: none;
+        padding: 10px 10px;
+        font-size: 16px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background 0.3s, transform 0.2s;
+        }
+
+        .logout-btn:hover {
+        background: #c82333;  /* Darker red on hover */
+        transform: scale(1.05);  /* Slight zoom effect */
+        }
+
+        .logout-btn:active {
+        transform: scale(0.95);  /* Press effect */
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="logo">Banking App</div>
+        <ul>
+            <li><a href="history.html">History</a></li>
+        </ul>
+    </nav>
+
+    <!-- Balance Display -->
+    <div class="container">
+        <div class="balance-box">
+            <h2>User Balance</h2>
+            <p id="userBalance">₹0</p>
+
+            <div class="input-group">
+                <input type="number" id="amount" placeholder="Enter amount">
+                <input type="text" id="reason" placeholder="Enter reason" required>
+                <button class="btn add" onclick="updateBalance('add')">Add</button>
+                <button class="btn deduct" onclick="updateBalance('deduct')">Deduct</button>
+                <button onclick="logout()" class="logout-btn">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("userBalance").textContent = "₹" + (localStorage.getItem("userBalance") || 1000);
+    
+        function updateBalance(action) {
+            let reason = document.getElementById("reason").value.trim();
+            let amount = parseInt(document.getElementById("amount").value);
+            let userBalance = parseInt(localStorage.getItem("userBalance") || 1000);
+    
+            if (reason === "") {
+                alert("Please enter a reason for this transaction.");
+                return;
+            }
+            if (isNaN(amount) || amount <= 0) {
+                alert("Please enter a valid amount.");
+                return;
+            }
+    
+            let finalAmount = amount;
+            if (action === "add") {
+                userBalance += amount;
+            } else if (action === "deduct") {
+                if (amount > userBalance) {
+                    alert("Insufficient balance!");
+                    return;
+                }
+                userBalance -= amount;
+                finalAmount = -amount; // Store deduction as a negative value
+            }
+    
+            localStorage.setItem("userBalance", userBalance);
+            document.getElementById("userBalance").textContent = "$" + userBalance;
+    
+            saveTransaction(reason, finalAmount, userBalance);
+            document.getElementById("reason").value = "";
+            document.getElementById("amount").value = "";
+        }
+    
+        function saveTransaction(reason, amount, balance) {
+            let transactions = JSON.parse(localStorage.getItem("transactionHistory") || "[]");
+            let date = new Date();
+            let transaction = {
+                reason: reason,
+                amount: amount, // This will be negative for deductions
+                balance: balance,
+                date: date.toLocaleDateString(),
+                time: date.toLocaleTimeString()
+            };
+    
+            transactions.push(transaction);
+            localStorage.setItem("transactionHistory", JSON.stringify(transactions));
+        }
+
+        function logout() {
+        localStorage.removeItem("isLoggedIn"); // Remove login flag
+        window.location.href = "index.html";  // Redirect to login page
+        }
+
+
+        if (localStorage.getItem("isLoggedIn") !== "true") {
+        alert("You must log in first!");
+        window.location.href = "index.html";
+        }
+    </script>
+    
+</body>
+</html>
